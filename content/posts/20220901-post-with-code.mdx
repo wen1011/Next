@@ -1,0 +1,36 @@
+---
+title: Post with code
+description: My post with code
+slug: post-with-code
+date: 2022-09-01
+type: Post
+---
+
+## Some post with code!
+
+
+Some other posts! with `some inline code`!
+
+```js:sample.js showLineNumbers
+const a = 1;
+a = 2;
+```
+
+```tsx:App.tsx showLineNumbers {5,15-17}
+import "@/styles/globals.css";
+
+import type { AppProps } from "next/app";
+	@@ -40,14 +40,14 @@ function MyApp({ Component, pageProps }: AppProps) {
+export default MyApp;
+```
+
+```diff-js:some.js showLineNumbers {3-4}
+const a = 1;
+- a = 2;
++ a = 2;
+a = 3;
+```
+
+```shell:Command
+$ echo "Hello world!"
+```

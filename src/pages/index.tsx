@@ -1,43 +1,61 @@
 import type { NextPage } from 'next';
+import { GetStaticProps } from 'next';
 import Head from 'next/head';
 import ThemeSwitch from '@/components/ThemeSwitch';
 import { allPostsNewToOld, Post } from '@/lib/contentLayerAdapter';
-
-export function getStaticProps() {
-  const posts = allPostsNewToOld;
-  return { props: { posts } };
-}
-
+import PostList, { PostForPostList } from '@/components/PostList';
+import { siteConfigs } from '@/configs/siteConfigs';
+import { ArticleJsonLd } from 'next-seo';
+type PostForIndexPage = PostForPostList;
 type Props = {
   posts: Post[];
 };
 
+
+export const getStaticProps: GetStaticProps<Props> = () => {
+  const posts = allPostsNewToOld.map((post) => ({
+    slug: post.slug,
+    date: post.date,
+    title: post.title,
+    description: post.description,
+    path: post.path,
+  })) as PostForIndexPage[];
+  return { props: { posts } };
+};
 const Home: NextPage<Props> = ({ posts }) => {
   return (
     <div>
-      <Head>
-        <title>My blog</title>
-        <meta name="description" content="Welcome to my blog" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+        <ArticleJsonLd
+        type="Blog"
+        url={siteConfigs.fqdn}
+        title={siteConfigs.title}
+        images={[siteConfigs.bannerUrl]}
+        datePublished={siteConfigs.datePublished}
+        authorName={siteConfigs.author}
+        description={siteConfigs.description}
+      />
 
-      <main className="bg-white p-4 text-black dark:bg-black dark:text-white">
-        <h1 className="mb-6 text-4xl font-bold">Welcome to my blog!</h1>
-        <div className="my-4">
-          <ThemeSwitch />
-        </div>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          {posts.map((post) => (
-            <div key={post.slug} className="rounded-lg border border-black p-6 dark:border-white">
-              <a href={post.path}>
-                <h2 className="mb-4 text-2xl font-semibold">{post.title}</h2>
-                <p>{post.description}</p>
-              </a>
-            </div>
-          ))}
-        </div>
-      </main>
+    <Head>
+      <title>Next.js Tailwind Contentlayer Blog Starter</title>
+      <meta name="description" content="Welcome to my blog" />
+      <link rel="icon" href="/favicon.ico" />
+    </Head>
+
+    <div className="prose my-12 space-y-2 transition-colors dark:prose-dark md:prose-lg md:space-y-5">
+      <h1 className="text-center sm:text-left">Hey，I am Iron Man ?</h1>
+      <p>我是 Tony Stark，不是 Stank！</p>
+      <p>老子很有錢，拯救過很多次世界。</p>
+      <p>我討厭外星人、紫色的東西、和紫色外星人。</p>
     </div>
+
+    <div className="my-4 divide-y divide-gray-200 transition-colors dark:divide-gray-700">
+      <div className="prose prose-lg my-8 dark:prose-dark">
+        <h2>最新文章</h2>
+      </div>
+
+      <PostList posts={posts} />
+    </div>
+  </div>
   );
 };
 
