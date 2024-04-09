@@ -6,13 +6,15 @@ import { allPostsNewToOld, Post } from '@/lib/contentLayerAdapter';
 import PostList, { PostForPostList } from '@/components/PostList';
 import { siteConfigs } from '@/configs/siteConfigs';
 import { ArticleJsonLd } from 'next-seo';
+import generateRSS from '@/lib/generateRSS';
 type PostForIndexPage = PostForPostList;
 type Props = {
-  posts: Post[];
+  posts: PostForIndexPage[];
 };
 
 
 export const getStaticProps: GetStaticProps<Props> = () => {
+ 
   const posts = allPostsNewToOld.map((post) => ({
     slug: post.slug,
     date: post.date,
@@ -20,6 +22,7 @@ export const getStaticProps: GetStaticProps<Props> = () => {
     description: post.description,
     path: post.path,
   })) as PostForIndexPage[];
+  generateRSS();
   return { props: { posts } };
 };
 const Home: NextPage<Props> = ({ posts }) => {

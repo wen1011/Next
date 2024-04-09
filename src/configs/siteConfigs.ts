@@ -1,4 +1,4 @@
-const fqdn = 'https://nextjs-tailwind-contentlayer-blog-starter.vercel.app';
+const fqdn = 'https://next-henna-two.vercel.app';
 const logoPath = '/logo.png';
 const bannerPath = '/og-image.png';
 
@@ -15,4 +15,6 @@ export const siteConfigs = {
   bannerUrl: fqdn + bannerPath,
   twitterID: '@EasonChang_me',
   datePublished: '2022-09-01',
+  credit: 'Stark Industries',
+  email: 'stark@example.com',
 };

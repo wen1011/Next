@@ -1,6 +1,8 @@
 import { defineDocumentType, makeSource } from './src/lib/contentLayerAdapter';
 import rehypePrism from 'rehype-prism-plus';
 import rehypeCodeTitles from 'rehype-code-titles'; // 新增這行
+import rehypeSlug from 'rehype-slug';
+
 export const Post = defineDocumentType(() => ({
   name: 'Post',
   // 更新 filePathPattern，從 *.md 改成 *.mdx，
@@ -39,5 +41,5 @@ export const Post = defineDocumentType(() => ({
 export default makeSource({
   contentDirPath: 'content',
   documentTypes: [Post],
-  mdx: { rehypePlugins: [rehypeCodeTitles,[rehypePrism, { ignoreMissing: true }]] },
+  mdx: { rehypePlugins: [rehypeSlug,rehypeCodeTitles,[rehypePrism, { ignoreMissing: true }]] },
 });

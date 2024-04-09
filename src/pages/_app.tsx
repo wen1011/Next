@@ -44,7 +44,19 @@ function App({ Component, pageProps }: AppProps) {
           rel: 'icon',
           href: siteConfigs.logoPath,
         },
+          // 加入下面這兩個 link tag
+          {
+            rel: 'alternate',
+            type: 'application/rss+xml',
+            href: '/feed.xml',
+          },
+          {
+            rel: 'alternate',
+            type: 'application/atom+xml',
+            href: '/atom.xml',
+          },
       ]}
+    
     />
 
     <LayoutWrapper>
