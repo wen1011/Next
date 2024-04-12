@@ -7,14 +7,14 @@ module.exports = {
   ],
   plugins: ['tailwindcss'],
   rules: {
-    'jsx-a11y/anchor-is-valid': [
-      'error',
-      {
-        components: ['Link'],
-        specialLink: ['hrefLeft', 'hrefRight'],
-        aspects: ['invalidHref', 'preferButton'],
-      },
-    ],
+    // 'jsx-a11y/anchor-is-valid': [
+    //   'error',
+    //   {
+    //     components: ['Link'],
+    //     specialLink: ['hrefLeft', 'hrefRight'],
+    //     aspects: ['invalidHref', 'preferButton'],
+    //   },
+    // ],
     'tailwindcss/classnames-order': 'off', // Respect prettier-plugin-tailwindcss order
   },
   overrides: [

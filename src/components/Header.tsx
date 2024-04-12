@@ -1,10 +1,13 @@
-import CustomLink from '@/components/CustomLink';
+import CustomLink from '@/components/CustomLink/index';
 import MobileNav from '@/components/MobileNav';
 import SectionContainer from '@/components/SectionContainer';
 import ThemeSwitch from '@/components/ThemeSwitch';
 import { headerConfigs } from '@/configs/headerConfigs';
-
+import CommandPaletteToggle from '@/components/CommandPaletteToggle';
+import LanguageSwitch from '@/components/LanguageSwitch';
+import { useTranslation } from 'next-i18next';
 export default function Header() {
+  const { t } = useTranslation(['common']);
   return (
     <header className="sticky top-0 z-10 border-b border-slate-900/10 bg-white/70 py-3 backdrop-blur transition-colors dark:border-slate-50/[0.06] dark:bg-gray-900/60">
       <SectionContainer>
@@ -27,12 +30,13 @@ export default function Header() {
                   href={link.href}
                   className="rounded p-3 font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-800"
                 >
-                  {link.title}
+                {t(link.title)} 
                 </CustomLink>
               ))}
             </div>
-
+            <LanguageSwitch />
             <ThemeSwitch />
+            <CommandPaletteToggle />
             <MobileNav />
           </div>
         </div>

@@ -1,15 +1,25 @@
 import type { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import { useMDXComponent } from 'next-contentlayer/hooks';
 import { ArticleJsonLd, NextSeo } from 'next-seo';
-
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { ParsedUrlQuery } from 'querystring';
+import { LOCALES } from '@/configs/i18nConfigs';
 import PostLayout, {
   PostForPostLayout,
   RelatedPostForPostLayout,
 } from '@/components/PostLayout';
+import LayoutPerPage from '@/components/LayoutPerPage';
 import { siteConfigs } from '@/configs/siteConfigs';
 import { allPosts, allPostsNewToOld } from '@/lib/contentLayerAdapter';
 import { getPostOGImage } from '@/lib/getPostOGImage';
 import mdxComponents from '@/lib/mdxComponents';
+import {
+  getCommandPalettePosts,
+  PostForCommandPalette,
+} from '@/components/CommandPalette/getCommandPalettePosts';
+import { useCommandPalettePostActions } from '@/components/CommandPalette/useCommandPalettePostActions';
+import { allRedirects } from '@/lib/getAllRedirects';
+import { unifyPath } from '@/lib/unifyPath';
 type PostForPostPage = PostForPostLayout & {
   title: string;
   description: string;
@@ -18,25 +28,50 @@ type PostForPostPage = PostForPostLayout & {
   socialImage:string|null;
   body: {
     code: string;
+   
+
   };
 };
 type Props = {
   post: PostForPostPage;
   prevPost: RelatedPostForPostLayout;
   nextPost: RelatedPostForPostLayout;
+  commandPalettePosts: PostForCommandPalette[];
 };
+interface Params extends ParsedUrlQuery {
+  slug: string;
+}
 
 export const getStaticPaths: GetStaticPaths = () => {
-  const paths = allPosts.map((post) => post.path);
+  const paths: string[] = [];
+  LOCALES.forEach((locale) => {
+    paths.push(...allPosts.map((post) => `/${locale}${post.path}`));
+  });
   return {
     paths,
     fallback: false,
   };
 };
 
-export const getStaticProps: GetStaticProps<Props> = ({ params }) => {
+export const getStaticProps: GetStaticProps<Props,Params> = async (
+  context
+)  => {
+  const { slug } = context.params!;
+  const locale = context.locale!;
+    // Handle redirect logic
+    const path = unifyPath('/posts/' + slug);
+    const matchedRedirectRule = allRedirects.find((rule) => rule.source === path);
+    if (matchedRedirectRule) {
+      return {
+        redirect: {
+          destination: matchedRedirectRule.destination,
+          permanent: matchedRedirectRule.permanent,
+        },
+      };
+    }
+  const commandPalettePosts = getCommandPalettePosts();
   const postIndex = allPostsNewToOld.findIndex(
-    (post) => post.slug === params?.slug
+    (post) => post.slug === slug
   );
   if (postIndex === -1) {
     return {
@@ -60,6 +95,7 @@ export const getStaticProps: GetStaticProps<Props> = ({ params }) => {
     socialImage:postFull.socialImage||null,
     body: {
       code: postFull.body.code,
+      raw: postFull.body.raw,
     },
   };
 
@@ -70,14 +106,16 @@ export const getStaticProps: GetStaticProps<Props> = ({ params }) => {
   }
   return {
     props: {
+      ...(await serverSideTranslations(locale, ['common'])),
       post,
       prevPost,
       nextPost,
+      commandPalettePosts
     },
   };
 };
 
-const PostPage: NextPage<Props> = ({ post, prevPost, nextPost }) => {
+const PostPage: NextPage<Props> = ({ post, prevPost, nextPost,commandPalettePosts }) => {
   const {
     description,
     title,
@@ -86,12 +124,13 @@ const PostPage: NextPage<Props> = ({ post, prevPost, nextPost }) => {
     socialImage,
     body: { code },
   } = post;
-  const url=siteConfigs.fqdn=path;
+  useCommandPalettePostActions(commandPalettePosts);
+  const url=siteConfigs.fqdn+path;
   const ogImage=getPostOGImage(socialImage)
   const MDXContent = useMDXComponent(code);
-
+  
   return (
-    <>
+    <LayoutPerPage>
     <NextSeo 
     title={title}
     description={description}
@@ -125,7 +164,7 @@ const PostPage: NextPage<Props> = ({ post, prevPost, nextPost }) => {
     <PostLayout post={post} nextPost={nextPost} prevPost={prevPost}>
       <MDXContent components={mdxComponents}/>
     </PostLayout>
-  </>
+  </LayoutPerPage>
   );
 };
 

@@ -1,20 +1,30 @@
 import type { NextPage } from 'next';
 import { GetStaticProps } from 'next';
 import Head from 'next/head';
+import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import ThemeSwitch from '@/components/ThemeSwitch';
 import { allPostsNewToOld, Post } from '@/lib/contentLayerAdapter';
 import PostList, { PostForPostList } from '@/components/PostList';
 import { siteConfigs } from '@/configs/siteConfigs';
 import { ArticleJsonLd } from 'next-seo';
 import generateRSS from '@/lib/generateRSS';
+import {
+  getCommandPalettePosts,
+  PostForCommandPalette,
+} from '@/components/CommandPalette/getCommandPalettePosts';
+import LayoutPerPage from '@/components/LayoutPerPage';
+import { useCommandPalettePostActions } from '@/components/CommandPalette/useCommandPalettePostActions';
 type PostForIndexPage = PostForPostList;
 type Props = {
   posts: PostForIndexPage[];
+  commandPalettePosts: PostForCommandPalette[];
 };
 
 
-export const getStaticProps: GetStaticProps<Props> = () => {
- 
+export const getStaticProps: GetStaticProps<Props> = async (context) => {
+  const locale = context.locale!;
+  const commandPalettePosts = getCommandPalettePosts();
   const posts = allPostsNewToOld.map((post) => ({
     slug: post.slug,
     date: post.date,
@@ -23,10 +33,14 @@ export const getStaticProps: GetStaticProps<Props> = () => {
     path: post.path,
   })) as PostForIndexPage[];
   generateRSS();
-  return { props: { posts } };
+  return { props: {   ...(await serverSideTranslations(locale, ['indexPage', 'common'])),posts,commandPalettePosts } };
 };
-const Home: NextPage<Props> = ({ posts }) => {
+const Home: NextPage<Props> = ({ posts,commandPalettePosts }) => {
+  const { t } = useTranslation(['indexPage', 'common']);
+
+  useCommandPalettePostActions(commandPalettePosts);
   return (
+    <LayoutPerPage>
     <div>
         <ArticleJsonLd
         type="Blog"
@@ -59,6 +73,7 @@ const Home: NextPage<Props> = ({ posts }) => {
       <PostList posts={posts} />
     </div>
   </div>
+  </LayoutPerPage>
   );
 };
 

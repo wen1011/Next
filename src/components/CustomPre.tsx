@@ -2,7 +2,7 @@
 
 import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
-
+import { useTranslation } from 'next-i18next';
 import { copyToClipboard } from '@/lib/copyToClipboard';
 import { removeDuplicateNewLine } from '@/lib/removeDuplicateNewLine';
 
@@ -25,7 +25,7 @@ function CustomPre({ children, className, ...props }: Props) {
       setCopied(true);
     }
   };
-
+  const { t } = useTranslation(['common']);
   return (
     <div className="group relative">
       <pre
@@ -39,7 +39,7 @@ function CustomPre({ children, className, ...props }: Props) {
               'group-hover:flex': copied,
             })}
           >
-            已複製！
+             {t('copied')}
           </span>
 
           <button
