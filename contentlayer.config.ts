@@ -46,8 +46,12 @@ export const Post = defineDocumentType(() => ({
 export default makeSource({
   contentDirPath: 'content',
   documentTypes: [Post],
-  mdx: { rehypePlugins: [rehypeSlug,rehypeCodeTitles,
-    [rehypePrism, { ignoreMissing: true }],
-    imageMetadata, // For adding image metadata (width, height)
-] },
+  mdx: {
+    rehypePlugins: [
+      rehypeSlug, // For generating slugs for headings
+      rehypeCodeTitles, // For adding titles to code blocks
+      [rehypePrism, { ignoreMissing: true }], // For code syntax highlighting
+      imageMetadata, // For adding image metadata (width, height)
+    ],
+  },
 });
