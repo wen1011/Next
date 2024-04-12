@@ -1,8 +1,10 @@
-import { defineDocumentType, makeSource } from './src/lib/contentLayerAdapter';
+import rehypeCodeTitles from 'rehype-code-titles';
 import rehypePrism from 'rehype-prism-plus';
-import rehypeCodeTitles from 'rehype-code-titles'; // 新增這行
 import rehypeSlug from 'rehype-slug';
-import imageMetadata from '@/plugins/imageMetadata';
+
+import { DEFAULT_LOCALE, LOCALES } from './src/configs/i18nConfigs';
+import { defineDocumentType, makeSource } from './src/lib/contentLayerAdapter';
+import imageMetadata from './src/plugins/imageMetadata';
 export const Post = defineDocumentType(() => ({
   name: 'Post',
   // 更新 filePathPattern，從 *.md 改成 *.mdx，
